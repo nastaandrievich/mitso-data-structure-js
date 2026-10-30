@@ -13,18 +13,17 @@ import { NotImplementedError } from "../extensions/index.js";
  *
  */
 export default class Stack {
-  push(/* element */) {
-    throw new NotImplementedError("Not implemented");
-    // remove line with error and write your code here
+  constructor() {
+    this.items = []; // используем массив для хранения
   }
-
-  pop() {
-    throw new NotImplementedError("Not implemented");
-    // remove line with error and write your code here
+  push(element) {  // добавить в конец
+    this.items.push(element);
   }
-
-  peek() {
-    throw new NotImplementedError("Not implemented");
-    // remove line with error and write your code here
+  pop() {  // вернуть верхний (последний) элемент и удалить его
+    return this.items.pop();
+  }
+  peek() {  // вернуть верхний (последний) элемент, но не удалять
+    if (this.items.length === 0) return undefined;
+    return this.items[this.items.length - 1];
   }
 }
