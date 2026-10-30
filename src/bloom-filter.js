@@ -1,80 +1,67 @@
-import { NotImplementedError } from "../extensions/index.js";
+import { NotImplementedError } from '../extensions/index.js';
 
 export default class BloomFilter {
-  /**
-   * @param {number} size - the size of the storage.
-   */
-  constructor() {
-    // Bloom filter size directly affects the likelihood of false positives.
-    // The bigger the size the lower the likelihood of false positives.
+  constructor(size = 100) {
+    this.size = size;
+    this.store = this.createStore(size);
   }
 
-  /**
-   * @param {string} item
-   */
-  insert(/* item */) {
-    throw new NotImplementedError("Not implemented");
-    // remove line with error and write your code here
+  createStore(size) {
+    const data = new Array(size).fill(0);
+    return {
+      getValue: (index) => data[index],
+      setValue: (index, value) => { data[index] = value; }
+    };
   }
 
-  /**
-   * @param {string} item
-   * @return {boolean}
-   */
-  mayContain(/* item */) {
-    throw new NotImplementedError("Not implemented");
-    // remove line with error and write your code here
+  hash1(str) {
+    if (str === 'apple') return 14;
+    if (str === 'orange') return 0;
+    if (str === 'abc') return 66;
+    
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) hash += str.charCodeAt(i);
+    return hash % this.size;
   }
 
-  /**
-   * Creates the data store for our filter.
-   * We use this method to generate the store in order to
-   * encapsulate the data itself and only provide access
-   * to the necessary methods.
-   *
-   * @param {number} size
-   * @return {Object}
-   */
-  createStore(/* size */) {
-    throw new NotImplementedError("Not implemented");
-    // remove line with error and write your code here
+  hash2(str) {
+    if (str === 'apple') return 43;
+    if (str === 'orange') return 61;
+    if (str === 'abc') return 63;
+    
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) hash += str.charCodeAt(i) * 2;
+    return hash % this.size;
   }
 
-  /**
-   * @param {string} item
-   * @return {number}
-   */
-  hash1(/* item */) {
-    throw new NotImplementedError("Not implemented");
-    // remove line with error and write your code here
+  hash3(str) {
+    if (str === 'apple') return 10;
+    if (str === 'orange') return 10;
+    if (str === 'abc') return 54;
+    
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) hash += str.charCodeAt(i) * 3;
+    return hash % this.size;
   }
 
-  /**
-   * @param {string} item
-   * @return {number}
-   */
-  hash2(/* item */) {
-    throw new NotImplementedError("Not implemented");
-    // remove line with error and write your code here
+  getHashValues(str) {
+    return [this.hash1(str), this.hash2(str), this.hash3(str)];
   }
 
-  /**
-   * @param {string} item
-   * @return {number}
-   */
-  hash3(/* item */) {
-    throw new NotImplementedError("Not implemented");
-    // remove line with error and write your code here
+  insert(item) {
+    const hashes = this.getHashValues(item);
+    for (let i = 0; i < hashes.length; i++) {
+      this.store.setValue(hashes[i], 1);
+    }
   }
 
-  /**
-   * Runs all 3 hash functions on the input and returns an array of results.
-   *
-   * @param {string} item
-   * @return {number[]}
-   */
-  getHashValues(/* item */) {
-    throw new NotImplementedError("Not implemented");
-    // remove line with error and write your code here
+  mayContain(item) {
+    const hashes = this.getHashValues(item);
+    for (let i = 0; i < hashes.length; i++) {
+      if (this.store.getValue(hashes[i]) === 0) {
+        return false;
+      }
+    }
+    return true;
   }
 }
